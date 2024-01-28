@@ -1,28 +1,35 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Log } from "viem";
-import { useContractEvent, usePublicClient } from "wagmi";
+import { useBlockNumber, useContractEvent, usePublicClient } from "wagmi";
 import ChatMessage from "./ChatMessage";
 
 const chatterjson = require("../../../chatter-contracts/out/Chatter.sol/Chatter.json");
 const chatterAddress = "0xb2E5e772602f98688A0902e7F02b277B28257AD0";
 
-export default function MessageHistory() {
+export default function MessageHistory({
+  address,
+}: {
+  address: `0x${string}` | undefined;
+}) {
   const [messages, setMessages] = useState<Log[]>();
   const publicClient = usePublicClient();
+  const { data: blocknumber } = useBlockNumber();
 
   useEffect(() => {
     setMessages([]);
 
-    publicClient
-      .getContractEvents({
-        address: chatterAddress,
-        abi: chatterjson.abi,
-        eventName: "Message",
-        fromBlock: BigInt(10441012),
-        toBlock: "latest",
-      })
-      .then(setMessages);
+    if (blocknumber) {
+      publicClient
+        .getContractEvents({
+          address: chatterAddress,
+          abi: chatterjson.abi,
+          eventName: "Message",
+          fromBlock: blocknumber - BigInt(100),
+          toBlock: "latest",
+        })
+        .then(setMessages);
+    }
   }, []);
 
   useContractEvent({
@@ -43,6 +50,7 @@ export default function MessageHistory() {
           <ChatMessage
             address={logmsg?.args?.sender}
             message={logmsg?.args?.message}
+            connectedAddress={address}
           />
         </div>
       ))}

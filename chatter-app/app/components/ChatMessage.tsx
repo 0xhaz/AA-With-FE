@@ -4,11 +4,12 @@ import JazziconImage from "./JazziconImage";
 export default function ChatMessage({
   address,
   message,
+  connectedAddress,
 }: {
   address: string;
   message: string;
+  connectedAddress?: `0${string}`;
 }) {
-  const { address: connectedAddress } = useAccount();
   return (
     <div
       className={[
