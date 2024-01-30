@@ -105,7 +105,6 @@ export default function StackupExample() {
     }
   }
 
-  //
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: data?.hash,
     onSettled() {
